@@ -1,13 +1,14 @@
 import express from "express";
-import http from "http";
 import cors from "cors";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
 
 import { connectDB } from "./config/db";
+import userRoutes from "./routes/User";
 
 dotenv.config();
 connectDB();
+
 const app = express();
 
 app.use(express.json());
@@ -16,6 +17,8 @@ app.use(cors());
 app.get("/test", (req, res) => {
   res.send("Api running successfully!");
 });
+
+app.use("/api/user", userRoutes);
 
 const server = app.listen(3000, () => {
   console.log("Server is listening on port 3000");
