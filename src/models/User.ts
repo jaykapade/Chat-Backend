@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
+
+interface IUser extends Document {
+  name: string;
+  email: string;
+  password: string;
+  pic?: string;
+  isAdmin?: boolean;
+
+  matchPassword: (enteredPassword: string) => Promise<boolean>; // Added interface due to custom method
+}
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,7 +23,6 @@ const userSchema = new mongoose.Schema(
     },
     isAdmin: {
       type: Boolean,
-      required: true,
       default: false,
     },
   },
@@ -33,6 +42,6 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model<IUser>("User", userSchema);
 
 export default User;
