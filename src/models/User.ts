@@ -1,15 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
-interface IUser extends Document {
-  name: string;
-  email: string;
-  password: string;
-  pic?: string;
-  isAdmin?: boolean;
-
-  matchPassword: (enteredPassword: string) => Promise<boolean>; // Added interface due to custom method
-}
+import { IUser } from "../types/User";
 
 const userSchema = new mongoose.Schema(
   {

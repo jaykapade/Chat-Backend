@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 
 import { connectDB } from "./config/db";
 import userRoutes from "./routes/User";
+import { errorHandler, notFound } from "./middlewares/error";
 
 dotenv.config();
 connectDB();
@@ -20,8 +21,14 @@ app.get("/test", (req, res) => {
 
 app.use("/api/user", userRoutes);
 
-const server = app.listen(3000, () => {
-  console.log("Server is listening on port 3000");
+// Error Handling middlewares
+app.use(notFound);
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 3000;
+
+const server = app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });
 
 const io = new Server(server, {
@@ -29,7 +36,7 @@ const io = new Server(server, {
     origin:
       process.env.NODE_ENV === "production"
         ? false
-        : ["http://localhost:3000", "http://127.0.0.1:3000"],
+        : [`http://localhost:${PORT}`, `http://127.0.0.1:${PORT}`],
   },
 });
 
