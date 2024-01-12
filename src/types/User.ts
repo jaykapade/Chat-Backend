@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { Document } from "mongoose";
 
-export type IUser = Document & {
+export type IUser = {
   name: string;
   email: string;
   password: string;

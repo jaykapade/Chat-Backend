@@ -3,8 +3,10 @@ import cors from "cors";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
 
-import { connectDB } from "./config/db";
 import userRoutes from "./routes/User";
+import chatRoutes from "./routes/Chat";
+
+import { connectDB } from "./config/db";
 import { errorHandler, notFound } from "./middlewares/error";
 
 dotenv.config();
@@ -20,6 +22,7 @@ app.get("/test", (req, res) => {
 });
 
 app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Error Handling middlewares
 app.use(notFound);
