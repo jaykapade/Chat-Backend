@@ -50,11 +50,7 @@ This project is a simple Node.js application that provides web services for a gr
    npm install
    ```
 
-3. Configure Database:
-
-   - [Add instructions to configure the chosen database]
-
-4. Start the application:
+3. Start the application:
 
    ```bash
    npm run dev
