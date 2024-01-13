@@ -1,6 +1,6 @@
 import express from "express";
 
-import { protect } from "../middlewares/auth";
+import { isAdmin, protect } from "../middlewares/auth";
 import {
   addToGroup,
   createGroupChat,
@@ -15,10 +15,10 @@ const router = express.Router();
 
 // TODO add isAdmin middleware or add admin check in routes
 
-router.route("/group").post(protect, createGroupChat);
-router.route("/rename").put(protect, renameGroup);
-router.route("/groupadd").put(protect, addToGroup);
-router.route("/groupremove").put(protect, removeFromGroup);
-router.route("/groupdelete").delete(protect, deleteGroupChat);
+router.route("/group").post([protect, isAdmin], createGroupChat);
+router.route("/rename").put([protect, isAdmin], renameGroup);
+router.route("/groupadd").put([protect, isAdmin], addToGroup);
+router.route("/groupremove").put([protect, isAdmin], removeFromGroup);
+router.route("/groupdelete").delete([protect, isAdmin], deleteGroupChat);
 
 export default router;

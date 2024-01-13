@@ -55,10 +55,10 @@ const deleteGroupChat = asyncHandler(
         throw new Error("Chat not found");
       }
 
-      // Check if the user is the admin of the group chat
+      // Check if the user is the admin of that group chat
       if (existingChat.groupAdmin!.toString() !== req.user?._id!.toString()) {
         res.status(403);
-        throw new Error("You are not authorized to delete this group chat");
+        throw new Error("Only Group Admin can delete this group chat");
       }
 
       // Delete associated messages

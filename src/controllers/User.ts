@@ -79,4 +79,24 @@ const getUsers = asyncHandler(async (req: AuthUserReq, res: Response) => {
   res.send(users);
 });
 
-export { registerUser, loginUser, getUsers };
+const makeAdmin = asyncHandler(async (req: AuthUserReq, res: Response) => {
+  if (!req.params.userId) {
+    res.status(400);
+    throw new Error("Invalid data passed into request");
+  }
+
+  const user = await User.findById(req.params.userId);
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  await user.updateOne({ $set: { isAdmin: true } });
+
+  res
+    .status(200)
+    .json({ message: "User has been upgraded to Admin successfully" });
+});
+
+export { registerUser, loginUser, getUsers, makeAdmin };

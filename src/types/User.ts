@@ -1,16 +1,16 @@
 import { Request } from "express";
 import { Document } from "mongoose";
 
-export type IUser = {
+export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
   pic?: string;
-  isAdmin?: boolean;
+  isAdmin: boolean;
 
   matchPassword: (enteredPassword: string) => Promise<boolean>;
-};
+}
 
-export type AuthUserReq = Request & {
-  user?: Document<IUser>;
-};
+export interface AuthUserReq extends Request {
+  user?: IUser;
+}

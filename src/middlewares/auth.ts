@@ -19,7 +19,7 @@ export const protect = asyncHandler(
         //decodes token id
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        req.user = await User.findById(decoded.id).select("-password");
+        req.user! = await User.findById(decoded.id).select("-password");
 
         next();
       } catch (error) {
@@ -32,5 +32,16 @@ export const protect = asyncHandler(
       res.status(401);
       throw new Error("Not authorized, no token");
     }
+  }
+);
+
+export const isAdmin = asyncHandler(
+  async (req: AuthUserReq, res: Response, next: NextFunction) => {
+    console.log("🚀 ~ req:", req.user);
+    if (!req.user?.isAdmin) {
+      res.status(401);
+      throw new Error("Not authorized, only admin can do this operation");
+    }
+    next();
   }
 );
