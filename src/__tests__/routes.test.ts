@@ -5,6 +5,7 @@ import server from "../server";
 let adminToken = "";
 let userToken = "";
 let chatId = "";
+let messageId = "";
 let chatUserCount = 0;
 let users: any[] = [];
 
@@ -68,6 +69,16 @@ describe("User routes", () => {
     expect(res.status).toBe(401);
     expect(res.body).toMatchObject({
       message: "Not authorized, no token",
+    });
+  });
+  it("Make User Admin", async () => {
+    const res = await request(server)
+      .put(`/api/user/${users[0]}`)
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      message: "User has been upgraded to Admin successfully",
     });
   });
 });
@@ -165,7 +176,7 @@ describe("Group Chat routes", () => {
     expect(res.status).toBe(200);
     expect(res.body.users.length).toBe(chatUserCount);
   });
-  it("Delete Group Chat", async () => {
+  it("Delete Group Chat as Group Admin", async () => {
     const res = await request(server)
       .delete("/api/chat/groupdelete")
       .send({
@@ -190,5 +201,63 @@ describe("Admin Middleware tests for Admin Protected routes", () => {
       })
       .set("Authorization", `Bearer ${userToken}`);
     expect(res.status).toBe(401);
+  });
+});
+
+describe("Message routes", () => {
+  it("Create Group Chat", async () => {
+    const res = await request(server)
+      .post("/api/chat/group")
+      .send({
+        users: JSON.stringify(users.slice(0, 2)),
+        name: "Message Group",
+      })
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    chatId = res.body._id;
+    chatUserCount = res.body.users.length;
+    expect(res.status).toBe(200);
+  });
+  it("Send message as group admin", async () => {
+    const res = await request(server)
+      .post("/api/message")
+      .send({
+        content: "Hello Admin",
+        chatId,
+      })
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.content).toEqual("Hello Admin");
+  });
+  it("Send message as user", async () => {
+    const res = await request(server)
+      .post("/api/message")
+      .send({
+        content: "Hello User",
+        chatId,
+      })
+      .set("Authorization", `Bearer ${userToken}`);
+
+    messageId = res.body._id;
+
+    expect(res.status).toBe(200);
+    expect(res.body.content).toEqual("Hello User");
+  });
+  it("Get all messages per chat", async () => {
+    const res = await request(server)
+      .get(`/api/message/${chatId}`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toEqual(2);
+  });
+  it("Like a Message", async () => {
+    const res = await request(server)
+      .patch(`/api/message/${messageId}`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.likedBy.length).toEqual(1);
   });
 });
