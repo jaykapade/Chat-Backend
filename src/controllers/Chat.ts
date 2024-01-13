@@ -42,7 +42,6 @@ const createGroupChat = asyncHandler(
   }
 );
 
-// TODO Check if deleteGroupChat is working fine along with Message deletion
 const deleteGroupChat = asyncHandler(
   async (req: AuthUserReq, res: Response): Promise<void> => {
     const chatId = req.body.chatId;
