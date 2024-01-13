@@ -13,14 +13,16 @@ const createGroupChat = asyncHandler(
       throw new Error("Please Fill all the fields: atleast 2 users and a name");
     }
 
-    var users = JSON.parse(req.body.users);
-
-    if (users.length < 2) {
-      res.status(400);
-      throw new Error("More than 2 users are required to form a group chat");
-    }
+    let users = JSON.parse(req.body.users);
 
     users.push(req.user!);
+    // Check to prevent duplicate users
+    users = Array.from(new Set(users));
+
+    if (users.length < 3) {
+      res.status(400);
+      throw new Error("Atleast 2 unique users are required excluding you");
+    }
 
     try {
       const groupChat = await Chat.create({
@@ -101,6 +103,18 @@ const renameGroup = asyncHandler(
 
 const addToGroup = asyncHandler(async (req: AuthUserReq, res) => {
   const { chatId, userId } = req.body;
+
+  const chat = await Chat.findById(chatId);
+
+  if (!chat) {
+    res.status(404);
+    throw new Error("Chat Not Found");
+  }
+
+  if (chat.users.includes(userId)) {
+    res.status(400);
+    throw new Error("User Already in group");
+  }
 
   const added = await Chat.findByIdAndUpdate(
     chatId,

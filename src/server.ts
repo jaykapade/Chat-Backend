@@ -8,11 +8,9 @@ import userRoutes from "./routes/User";
 import chatRoutes from "./routes/Chat";
 import messageRoutes from "./routes/Message";
 
-import { connectDB } from "./config/db";
 import { errorHandler, notFound } from "./middlewares/error";
 
 dotenv.config();
-connectDB();
 
 const app = express();
 
@@ -20,7 +18,9 @@ app.use(express.json());
 app.use(cors());
 
 app.get("/test", (req, res) => {
-  res.send("Api running successfully!");
+  res.send({
+    message: "Server is up and running",
+  });
 });
 
 app.use("/api/user", userRoutes);
@@ -30,8 +30,6 @@ app.use("/api/message", messageRoutes);
 // Error Handling middlewares
 app.use(notFound);
 app.use(errorHandler);
-
-const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(app);
 
@@ -53,9 +51,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("new message", (newMessageRecieved) => {
-    var chat = newMessageRecieved.chat;
+    let chat = newMessageRecieved.chat;
 
-    if (!chat.users) return console.log("chat.users not defined");
+    if (!chat.users) return console.log("chat users are not defined");
 
     chat.users.forEach((user: any) => {
       if (user._id == newMessageRecieved.sender._id) return;
@@ -65,7 +63,4 @@ io.on("connection", (socket) => {
   });
 });
 
-// Server Port listening
-server.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
+export default server;

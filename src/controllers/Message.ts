@@ -40,7 +40,7 @@ const sendMessage = asyncHandler(
       throw new Error("Please provide content and chatId");
     }
 
-    var newMessage = {
+    let newMessage = {
       sender: req.user!._id,
       content: content,
       chat: chatId,
