@@ -11,7 +11,7 @@ const getMessagesPerChat = asyncHandler(async (req: Request, res: Response) => {
     const chatId = req.params.chatId;
     if (!chatId) {
       res.status(400);
-      throw new Error("Invalid data passed into request");
+      throw new Error("Please provide Chat Id");
     }
 
     const chat = await Chat.findById(chatId);
@@ -37,7 +37,7 @@ const sendMessage = asyncHandler(
 
     if (!content || !chatId) {
       res.sendStatus(400);
-      throw new Error("Invalid data passed into request");
+      throw new Error("Please provide content and chatId");
     }
 
     var newMessage = {
@@ -76,4 +76,31 @@ const sendMessage = asyncHandler(
   }
 );
 
-export { getMessagesPerChat, sendMessage };
+const likeMessage = asyncHandler(
+  async (req: AuthUserReq, res: Response): Promise<void> => {
+    const messageId = req.params.messageId;
+
+    if (!messageId) {
+      res.sendStatus(400);
+      throw new Error("Please provide Message Id");
+    }
+
+    try {
+      let message: any = await Message.findById(messageId);
+
+      if (!message) {
+        res.status(404);
+        throw new Error("Message not found");
+      }
+
+      const likedMessage = await message.like(req.user!._id);
+
+      res.json(likedMessage);
+    } catch (error: any) {
+      res.status(400);
+      throw new Error(error.message);
+    }
+  }
+);
+
+export { getMessagesPerChat, sendMessage, likeMessage };

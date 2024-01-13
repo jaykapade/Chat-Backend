@@ -82,7 +82,7 @@ const getUsers = asyncHandler(async (req: AuthUserReq, res: Response) => {
 const makeAdmin = asyncHandler(async (req: AuthUserReq, res: Response) => {
   if (!req.params.userId) {
     res.status(400);
-    throw new Error("Invalid data passed into request");
+    throw new Error("Please provide User Id");
   }
 
   const user = await User.findById(req.params.userId);
