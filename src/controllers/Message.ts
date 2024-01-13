@@ -66,7 +66,7 @@ const sendMessage = asyncHandler(
         select: "name pic email",
       });
 
-      await chat.updateOne(req.body.chatId, { latestMessage: message });
+      await Chat.findByIdAndUpdate(chatId, { latestMessage: message });
 
       res.json(message);
     } catch (error: any) {
